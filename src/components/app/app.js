@@ -18,7 +18,8 @@ export default class extends Component {
       this.createTodoItem('Make Awesome App'),
       this.createTodoItem('Have a lunch')
     ],
-      filter: ''
+      filter: '',
+      status: 'all'
     };
 
     searchFilter = (value) => {
@@ -102,10 +103,34 @@ export default class extends Component {
       });
     };
 
+    changeStatus = (type) => {
+      this.setState( ({status}) => {
+        return{
+          status: type
+        }
+      });
+    }
+
+    statusFilter = (items, type) => {
+
+      switch(type){
+        case 'all':
+          return items;
+        case 'done':
+          return items.filter( item => item.done );
+        case 'active':
+          return items.filter( item => !item.done);
+        default:
+          return items;
+      }
+
+
+    };
+
     render(){
-      const {todoData, filter} = this.state;
-      const toDisplay = todoData.filter( (el) => el.label
-                        .toLowerCase().includes(filter));
+      const {todoData, filter, status} = this.state;
+      const toDisplay = this.statusFilter( todoData.filter( (el) => el.label
+                        .toLowerCase().includes(filter)), status);
 
       const doneCount = todoData.filter( (el) => el.done).length;
       const todoCount = 
@@ -118,7 +143,8 @@ export default class extends Component {
             <SearchPanel 
             onSearch={this.searchFilter}
             />
-            <ItemStatusFilter />
+            <ItemStatusFilter 
+            onFilter = {this.changeStatus}/>
 
           </div>
     
